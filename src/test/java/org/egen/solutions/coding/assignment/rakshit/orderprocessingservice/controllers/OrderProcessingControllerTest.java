@@ -64,20 +64,20 @@ public class OrderProcessingControllerTest {
 
         Item item1 = Item.builder()
                 .itemId(123L)
-                .orderItemName("item-1")
-                .orderItemQty(2)
+                .itemName("item-1")
+                .itemQty(2)
                 .build();
 
         Item item2 = Item.builder()
                 .itemId(456L)
-                .orderItemName("item-2")
-                .orderItemQty(3)
+                .itemName("item-2")
+                .itemQty(3)
                 .build();
 
         Item item3 = Item.builder()
                 .itemId(789L)
-                .orderItemName("item-3")
-                .orderItemQty(4)
+                .itemName("item-3")
+                .itemQty(4)
                 .build();
 
         List<Item> items = Arrays.asList(item1, item2, item3);

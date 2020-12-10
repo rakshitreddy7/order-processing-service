@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(OrderDataNotFoundException.class)
-    public ResponseEntity<?> orderNotFoundException(OrderDataNotFoundException ex, WebRequest request) {
+    public ResponseEntity<?> orderDataNotFoundException(OrderDataNotFoundException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false));
         logger.info(ex.getMessage());
 

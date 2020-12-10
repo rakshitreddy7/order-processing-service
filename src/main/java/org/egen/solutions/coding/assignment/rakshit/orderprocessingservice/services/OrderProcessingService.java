@@ -91,23 +91,23 @@ public class OrderProcessingService {
         List<OrderDetails> orderDetails = orderDetailsClient.findByCustomerIdOrderByCreatedDateDesc(customerId)
                 .orElseThrow(() -> new OrderDataNotFoundException(ORDER_DETAILS_NOT_FOUND_FOR_CUSTOMER + customerId));
 
-        List<OrderDetailsView> orderDetailsViews = new ArrayList<>();
+        List<OrderDetailsView> customerOrders = new ArrayList<>();
 
         for (OrderDetails order : orderDetails) {
             UUID orderId = order.getOrderId();
             List<Item> items = populateItems(orderId);
             OrderDetailsView orderDetailsView = orderDetailsMapper.map(order, items);
-            orderDetailsViews.add(orderDetailsView);
+            customerOrders.add(orderDetailsView);
         }
 
         logger.info("Fetching all the OrderDetails by a customer.......");
         return CustomerOrdersView.builder()
-                .customerOrders(orderDetailsViews)
+                .customerOrders(customerOrders)
                 .build();
     }
 
     private List<Item> populateItems(UUID orderId) throws OrderDataNotFoundException {
-        List<ItemQuantity> itemQuantities = itemQuantityClient.findByOrOrderItemCompositeKeyOrderId(orderId)
+        List<ItemQuantity> itemQuantities = itemQuantityClient.findByOrderItemCompositeKey_OrderId(orderId)
                 .orElseThrow(() -> new OrderDataNotFoundException(ORDER_DETAILS_NOT_FOUND + orderId));
 
         List<Item> items = new ArrayList<>();
@@ -119,8 +119,8 @@ public class OrderProcessingService {
 
                 Item item = Item.builder()
                         .itemId(itemDetails.getId())
-                        .orderItemName(itemDetails.getName())
-                        .orderItemQty(itemQuantity.getQuantity())
+                        .itemName(itemDetails.getName())
+                        .itemQty(itemQuantity.getQuantity())
                         .build();
 
                 items.add(item);
@@ -146,7 +146,7 @@ public class OrderProcessingService {
 
         items.forEach(item -> {
             Long itemId = item.getItemId();
-            Integer orderItemQty = item.getOrderItemQty();
+            Integer orderItemQty = item.getItemQty();
 
             OrderItemComposite orderItemComposite = OrderItemComposite.builder()
                     .itemId(itemId)
@@ -207,7 +207,7 @@ public class OrderProcessingService {
         List<Item> items = requestedOrder.getItems();
         items.forEach(item -> {
             Long itemId = item.getItemId();
-            String itemName = item.getOrderItemName();
+            String itemName = item.getItemName();
 
             ItemDetails itemDetailsData = ItemDetails.builder()
                     .id(itemId)

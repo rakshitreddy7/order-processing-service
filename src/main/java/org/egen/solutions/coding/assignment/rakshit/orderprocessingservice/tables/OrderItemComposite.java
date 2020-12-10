@@ -18,5 +18,6 @@ import java.util.UUID;
 public class OrderItemComposite implements Serializable {
     @Type(type = "uuid-char")
     private UUID orderId;
+
     private Long itemId;
 }

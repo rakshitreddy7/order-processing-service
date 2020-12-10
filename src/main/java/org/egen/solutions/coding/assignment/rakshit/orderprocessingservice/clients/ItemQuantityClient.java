@@ -11,5 +11,5 @@ import java.util.UUID;
 
 @Repository
 public interface ItemQuantityClient extends JpaRepository<ItemQuantity, OrderItemComposite> {
-    Optional<List<ItemQuantity>> findByOrOrderItemCompositeKeyOrderId(UUID orderId);
+    Optional<List<ItemQuantity>> findByOrderItemCompositeKey_OrderId(UUID orderId);
 }

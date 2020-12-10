@@ -15,8 +15,10 @@ import javax.validation.constraints.NotNull;
 public class Item {
     @NotNull (message = "itemId cannot be null")
     private Long itemId;
-    @NotBlank (message = "orderItemName cannot be null")
-    private String orderItemName;
-    @NotNull (message = "orderItemQty cannot be null")
-    private Integer orderItemQty;
+
+    @NotBlank (message = "itemName cannot be null")
+    private String itemName;
+
+    @NotNull (message = "itemQty cannot be null")
+    private Integer itemQty;
 }

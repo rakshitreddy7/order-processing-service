@@ -23,51 +23,52 @@ To run the app locally using docker :
 4. Load `http://localhost:9090/swagger-ui/` in the browser.
 
 #### Sample RequestBody for `POST /api/orders` :
-```{
-  "order": {
-    "items": [
-      {
-        "itemId": 12,
-        "orderItemName": "item-3",
-        "orderItemQty": 2
-      },
-      {
-        "itemId": 11,
-        "orderItemName": "item-2",
-        "orderItemQty": 1
-      }
-    ],
-    "orderStatus" : "ACTIVE",
-    "orderSubtotal" : 125,
-    "orderCustomerId" : 999,
-    "orderTotal" : 140,
-    "orderTax" : 15,
-    "billingAddress": {
-      "line1": "APT-506",
-      "city": "Chicago",
-      "state": "IL",
-      "zip": "60657"
-    },
-    "shippingAddress": {
-      "line1": "APT-507",
-      "city": "NYC",
-      "state": "NY",
-      "zip": "07032"
-    },
-    "paymentInfoDetails" : [
-       {
-          "paymentMethod" : "CARD",
-          "amount" : 20
+```
+{
+     "order": {
+       "items": [
+         {
+           "itemId": 12,
+           "itemName": "item-3",
+           "itemQty": 2
+         },
+         {
+           "itemId": 11,
+           "itemName": "item-2",
+           "itemQty": 1
+         }
+       ],
+       "orderStatus" : "ACTIVE",
+       "orderSubtotal" : 125,
+       "orderCustomerId" : 999,
+       "orderTotal" : 140,
+       "orderTax" : 15,
+       "billingAddress": {
+         "line1": "APT-506",
+         "city": "Chicago",
+         "state": "IL",
+         "zip": "60657"
        },
-      {
-          "paymentMethod" : "CASH",
-          "amount" : 200
-       }
-    ],
-    "orderPaymentDate" : "2020-12-24",
-    "shippingMethod" : "SHIP_TO_HOME"
-  }
-}
+       "shippingAddress": {
+         "line1": "APT-507",
+         "city": "NYC",
+         "state": "NY",
+         "zip": "07032"
+       },
+       "paymentInfoDetails" : [
+          {
+             "paymentMethod" : "CARD",
+             "amount" : 20
+          },
+         {
+             "paymentMethod" : "CASH",
+             "amount" : 200
+          }
+       ],
+       "orderPaymentDate" : "2020-12-24",
+       "shippingMethod" : "SHIP_TO_HOME"
+     }
+   }
 ```
 ##### **NOTE :**
 1. Use the `orderId` returned in the response for the above `POST` request, for `GET /api/order/{orderId}` to get order details by `orderId` and `PUT /api/order/{orderId}` to cancel an order by `orderId`.

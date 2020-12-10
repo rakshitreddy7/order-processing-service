@@ -17,15 +17,14 @@ import java.util.UUID;
 public class OrderDetailsMapper {
 
     private static Map<ShippingMethod,Double> shippingCharges = new HashMap<>();
-
-    private void populateMap() {
+    
+    static {
         shippingCharges.put(ShippingMethod.IN_STORE_PICKUP, 0.0);
         shippingCharges.put(ShippingMethod.CURB_SIDE_DELIVERY, 0.0);
         shippingCharges.put(ShippingMethod.SHIP_TO_HOME, 10.0);
     }
 
     public OrderDetailsView map(OrderDetails orderDetails, List<Item> items) {
-        populateMap();
         UUID orderId = orderDetails.getOrderId();
         OrderStatus orderStatus = orderDetails.getStatus();
         LocalDateTime orderDate = orderDetails.getCreatedDate();

@@ -20,7 +20,6 @@ import java.io.Serializable;
 @Entity
 @Table(name = "item_quantity")
 public class ItemQuantity implements Serializable {
-
     @EmbeddedId
     private OrderItemComposite orderItemCompositeKey;
 
