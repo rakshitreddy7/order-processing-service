@@ -139,9 +139,11 @@ public class OrderProcessingService {
     }
 
     private UUID putOrderData(OrderRequest request) {
+        List<ItemQuantity> itemQuantities = new ArrayList<>();
+
         Order requestedOrder = request.getOrder();
-        List<ItemQuantity> itemDetails = new ArrayList<>();
         List<Item> items = requestedOrder.getItems();
+
         items.forEach(item -> {
             Long itemId = item.getItemId();
             Integer orderItemQty = item.getOrderItemQty();
@@ -154,7 +156,8 @@ public class OrderProcessingService {
                     .orderItemCompositeKey(orderItemComposite)
                     .quantity(orderItemQty)
                     .build();
-            itemDetails.add(itemQuantity);
+
+            itemQuantities.add(itemQuantity);
         });
 
         List<PaymentDetails> payments = new ArrayList<>();
@@ -188,7 +191,7 @@ public class OrderProcessingService {
                 .build();
 
         payments.forEach(orderDetails::addPayment);
-        itemDetails.forEach(orderDetails::addItem);
+        itemQuantities.forEach(orderDetails::addItem);
 
         OrderDetails savedOrder = orderDetailsClient.save(orderDetails);
         UUID orderId = savedOrder.getOrderId();
