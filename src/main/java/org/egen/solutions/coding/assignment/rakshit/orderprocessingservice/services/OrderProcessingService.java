@@ -29,6 +29,7 @@ import org.egen.solutions.coding.assignment.rakshit.orderprocessingservice.table
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -43,6 +44,7 @@ public class OrderProcessingService {
     private static final String ORDER_DETAILS_NOT_FOUND = "OrderDetails not found for the orderId: ";
     private static final String ITEM_DETAILS_NOT_FOUND = "ItemDetails not found for the itemId: ";
     private static final String ORDER_DETAILS_NOT_FOUND_FOR_CUSTOMER = "OrderDetails not found for the customerId: ";
+    private static final String ARE_SUCCESSFULLY_SAVED = " are successfully saved.";
     private static final Logger logger = LoggerFactory.getLogger(OrderProcessingService.class);
 
     private ItemDetailsClient itemDetailsClient;
@@ -71,15 +73,20 @@ public class OrderProcessingService {
         this.orderDetailsMapper = orderDetailsMapper;
     }
 
+    @Cacheable(value = "orderByOrderIdCache", key = "#orderId")
     public OrderDetailsView getOrderByOrderId(UUID orderId) throws OrderDataNotFoundException {
        OrderDetails orderDetails = orderDetailsClient.findById(orderId)
                 .orElseThrow(() -> new OrderDataNotFoundException(ORDER_DETAILS_NOT_FOUND + orderId));
 
         List<Item> items = populateItems(orderId);
 
-        return orderDetailsMapper.map(orderDetails, items);
+        OrderDetailsView orderDetailsView = orderDetailsMapper.map(orderDetails, items);
+
+        logger.info("Fetching OrderDetails.......");
+        return orderDetailsView;
     }
 
+    @Cacheable(value = "ordersByCustomerIdCache", key = "#customerId")
     public CustomerOrdersView getOrdersByCustomerId(Long customerId) throws OrderDataNotFoundException {
         List<OrderDetails> orderDetails = orderDetailsClient.findByCustomerIdOrderByCreatedDateDesc(customerId)
                 .orElseThrow(() -> new OrderDataNotFoundException(ORDER_DETAILS_NOT_FOUND_FOR_CUSTOMER + customerId));
@@ -93,6 +100,7 @@ public class OrderProcessingService {
             orderDetailsViews.add(orderDetailsView);
         }
 
+        logger.info("Fetching all the OrderDetails by a customer.......");
         return CustomerOrdersView.builder()
                 .customerOrders(orderDetailsViews)
                 .build();
@@ -186,7 +194,7 @@ public class OrderProcessingService {
         UUID orderId = savedOrder.getOrderId();
         Long customerId = savedOrder.getCustomerId();
 
-        logger.info("OrderDetails for the orderId : " + orderId + " and customerId : " + customerId + " are successfully saved.");
+        logger.info("OrderDetails for the orderId: " + orderId + " and customerId: " + customerId + ARE_SUCCESSFULLY_SAVED);
 
         return orderId;
     }
@@ -205,7 +213,7 @@ public class OrderProcessingService {
 
             itemDetailsClient.save(itemDetailsData);
 
-            logger.info("ItemDetails for the itemId : " + itemId + " are successfully saved.");
+            logger.info("ItemDetails for the itemId: " + itemId + ARE_SUCCESSFULLY_SAVED);
         });
     }
 
@@ -239,7 +247,7 @@ public class OrderProcessingService {
                 .build();
 
         cityStateDetailsClient.save(shippingDetails);
-        logger.info("City and State Details for the city : " + shippingCity + " are successfully saved.");
+        logger.info("City and State Details for the city: " + shippingCity + ARE_SUCCESSFULLY_SAVED);
 
         String billingCity = requestedOrder.getBillingAddress().getCity();
         String billingState = requestedOrder.getBillingAddress().getState();
@@ -250,7 +258,7 @@ public class OrderProcessingService {
                 .build();
 
         cityStateDetailsClient.save(billingDetails);
-        logger.info("City and State Details for the city : " + billingCity + " are successfully saved.");
+        logger.info("City and State Details for the city: " + billingCity + ARE_SUCCESSFULLY_SAVED);
     }
 
     private void putZipCodeCityData(OrderRequest request) {
@@ -265,7 +273,7 @@ public class OrderProcessingService {
                 .build();
 
         zipCodeCityClient.save(zipCodeCityShippingDetails);
-        logger.info("ZipCode and City Details for the city : " + shippingCity + " are successfully saved.");
+        logger.info("ZipCode and City Details for the city: " + shippingCity + ARE_SUCCESSFULLY_SAVED);
 
         String billingCity = requestedOrder.getBillingAddress().getCity();
         String billingZip = requestedOrder.getBillingAddress().getZip();
@@ -276,7 +284,7 @@ public class OrderProcessingService {
                 .build();
 
         zipCodeCityClient.save(zipCodeCityBillingDetails);
-        logger.info("ZipCode and City Details for the city : " + billingCity + " are successfully saved.");
+        logger.info("ZipCode and City Details for the city: " + billingCity + ARE_SUCCESSFULLY_SAVED);
     }
 
     private void putBillingDetailsData(OrderRequest request) {
@@ -293,7 +301,7 @@ public class OrderProcessingService {
                 .build();
 
         billingDetailsClient.save(billingDetails);
-        logger.info("Billing Details for the customerId : " + customerId + " are successfully saved.");
+        logger.info("Billing Details for the customerId: " + customerId + ARE_SUCCESSFULLY_SAVED);
     }
 
     public UUID cancelOrder(UUID orderId) throws OrderDataNotFoundException {
@@ -303,7 +311,7 @@ public class OrderProcessingService {
         orderDetails.setStatus(OrderStatus.CANCELLED);
         orderDetails.setLastModifiedDate(LocalDateTime.now());
         OrderDetails savedOrder = orderDetailsClient.save(orderDetails);
-        logger.info("OrderId : " + orderId + " is successfully cancelled.");
+        logger.info("OrderId: " + orderId + " is successfully cancelled.");
 
         return savedOrder.getOrderId();
     }
