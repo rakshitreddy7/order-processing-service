@@ -75,4 +75,4 @@ To run the app locally using docker :
 
 #### Database Schema :
 
-![alt text](/Users/radaboyna/Documents/Github/order-processing-service/src/main/resources/schema.png)
+![alt text](src/main/resources/schema.png)
