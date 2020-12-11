@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,10 +108,10 @@ public class OrderProcessingService {
     }
 
     private List<Item> populateItems(UUID orderId) throws OrderDataNotFoundException {
+        List<Item> items = new ArrayList<>();
+
         List<ItemQuantity> itemQuantities = itemQuantityClient.findByOrderItemCompositeKey_OrderId(orderId)
                 .orElseThrow(() -> new OrderDataNotFoundException(ORDER_DETAILS_NOT_FOUND + orderId));
-
-        List<Item> items = new ArrayList<>();
 
         for (ItemQuantity itemQuantity : itemQuantities) {
                 Long itemId = itemQuantity.getOrderItemCompositeKey().getItemId();
@@ -161,17 +162,20 @@ public class OrderProcessingService {
         });
 
         List<PaymentDetails> payments = new ArrayList<>();
+
         List<PaymentInfoDetails> paymentInfoDetails = requestedOrder.getPaymentInfoDetails();
+        LocalDate orderPaymentDate = requestedOrder.getOrderPaymentDate();
+
         paymentInfoDetails.forEach(payment -> {
             PaymentMethod paymentMethod = payment.getPaymentMethod();
             Double amount = payment.getAmount();
 
-            PaymentDetails paymentDetailsRow = PaymentDetails.builder()
+            PaymentDetails paymentDetails = PaymentDetails.builder()
                     .amount(amount)
                     .method(paymentMethod)
-                    .date(requestedOrder.getOrderPaymentDate())
+                    .date(orderPaymentDate)
                     .build();
-            payments.add(paymentDetailsRow);
+            payments.add(paymentDetails);
         });
 
         Address shippingAddress = requestedOrder.getShippingAddress();

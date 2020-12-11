@@ -40,10 +40,10 @@ public class OrderDetails {
     @Enumerated(EnumType.STRING)
     private ShippingMethod shippingMethod;
 
-    @OneToMany(mappedBy = "orderDetails" , cascade= CascadeType.ALL)
+    @OneToMany(mappedBy = "orderDetails" , cascade = CascadeType.ALL)
     private List<PaymentDetails> payments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "orderDetails" , cascade= CascadeType.ALL)
+    @OneToMany(mappedBy = "orderDetails" , cascade = CascadeType.ALL)
     private List<ItemQuantity> items = new ArrayList<>();
 
     private Long customerId;
